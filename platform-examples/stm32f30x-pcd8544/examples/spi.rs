@@ -15,7 +15,7 @@ use hal::gpio::{gpioa, Output, PushPull};
 use embedded_hal::spi;
 
 extern crate pcd8544_hal;
-use pcd8544_hal::{Pcd8544, Pcd8544Gpio, Pcd8544Spi};
+use pcd8544_hal::{Pcd8544, Pcd8544Spi};
 
 fn main() {
     let cp = cortex_m::Peripherals::take().unwrap();
@@ -50,15 +50,6 @@ fn main() {
         &mut rcc.apb2,
     );
 
-    /*
-    let din = gpioa
-        .pa7
-        .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
-    let clk = gpioa
-        .pa5
-        .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
-    */
-
     // other pins for PCD8544
     let dc: gpioa::PA4<Output<PushPull>> = gpioa
         .pa4
@@ -74,7 +65,6 @@ fn main() {
         .into(); // PA1
 
     let mut pcd8544 = Pcd8544Spi::new(spi, dc, cs, &mut rst, &mut delay);
-    //let mut pcd8544 = Pcd8544Gpio::new(clk, din, dc, cs, &mut rst, &mut delay);
 
     pcd8544.print("Hello world!");
 
