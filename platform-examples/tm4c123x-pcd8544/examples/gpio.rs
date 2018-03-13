@@ -48,12 +48,12 @@ fn main() {
 
     let mut pcd8544 = Pcd8544Gpio::new(clk, din, dc, cs, &mut rst, &mut delay);
 
-    pcd8544.print("Hello world!");
-
     loop {
-        delay.delay_ms(200u16);
-        pcd8544.command(0x0D);
-        delay.delay_ms(200u16);
-        pcd8544.command(0x0C);
+        for i in 0..6 {
+            pcd8544.set_position(0, i);
+            pcd8544.print("Hello world!");
+            delay.delay_ms(500u16);
+            pcd8544.clear();
+        }
     }
 }

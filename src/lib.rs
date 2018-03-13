@@ -28,8 +28,7 @@ pub trait Pcd8544 {
         self.command(0x20); // we must send 0x20 before modifying the display control mode
         self.command(0x0C); // set display control to normal mode: 0x0D for inverse
 
-        self.command(0x80);
-        self.command(0x40);
+        self.clear();
     }
 
     fn print_char(&mut self, c: u8) {
@@ -45,5 +44,32 @@ pub trait Pcd8544 {
         for c in s.bytes() {
             self.print_char(c);
         }
+    }
+
+    fn set_position(&mut self, x: u8, y: u8) {
+        assert!(x <= 84);
+        assert!(y < 6);
+
+        self.command(0x40 + y);
+        self.command(0x80 + x);
+    }
+
+    fn draw(&mut self, data: [[u8; 5]; 84]) {
+        self.set_position(0, 0);
+        self.command(0x22); // vertical addressing
+        for col in data.iter() {
+            for byte in col.iter() {
+                self.print_char(*byte);
+            }
+        }
+        self.command(0x20); // horizontal addressing
+    }
+
+    fn clear(&mut self) {
+        self.set_position(0, 0);
+        for _ in 0..(6*84) {
+            self.data(0x00);
+        }
+        self.set_position(0, 0);
     }
 }
