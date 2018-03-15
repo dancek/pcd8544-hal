@@ -10,6 +10,7 @@ extern crate embedded_hal;
 mod pcd8544_spi;
 mod pcd8544_gpio;
 mod font;
+pub mod demo;
 
 pub use pcd8544_spi::Pcd8544Spi;
 pub use pcd8544_gpio::Pcd8544Gpio;
@@ -54,15 +55,17 @@ pub trait Pcd8544 {
         self.command(0x80 + x);
     }
 
-    fn draw(&mut self, data: [[u8; 5]; 84]) {
-        self.set_position(0, 0);
+    // note: data direction is vertical: [1 2 3 4 5 6]
+    // 1 3 5
+    // 2 4 6
+    fn draw_buffer(&mut self, data: &[u8; 6*84]) {
         self.command(0x22); // vertical addressing
-        for col in data.iter() {
-            for byte in col.iter() {
-                self.print_char(*byte);
-            }
+        self.set_position(0, 0);
+        for byte in data.iter().rev() {
+            self.data(*byte);
         }
         self.command(0x20); // horizontal addressing
+        self.set_position(0, 0);
     }
 
     fn clear(&mut self) {

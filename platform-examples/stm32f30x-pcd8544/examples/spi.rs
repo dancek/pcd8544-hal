@@ -15,7 +15,7 @@ use hal::gpio::{gpioa, Output, PushPull};
 use embedded_hal::spi;
 
 extern crate pcd8544_hal;
-use pcd8544_hal::{Pcd8544, Pcd8544Spi};
+use pcd8544_hal::Pcd8544Spi;
 
 fn main() {
     let cp = cortex_m::Peripherals::take().unwrap();
@@ -66,12 +66,8 @@ fn main() {
 
     let mut pcd8544 = Pcd8544Spi::new(spi, dc, cs, &mut rst, &mut delay);
 
-    pcd8544.print("Hello world!");
+    pcd8544_hal::demo::demo(&mut pcd8544);
 
     loop {
-        delay.delay_ms(200u16);
-        pcd8544.command(0x0D);
-        delay.delay_ms(200u16);
-        pcd8544.command(0x0C);
     }
 }
