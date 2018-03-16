@@ -61,7 +61,7 @@ pub trait Pcd8544 {
     fn draw_buffer(&mut self, data: &[u8; 6*84]) {
         self.command(0x22); // vertical addressing
         self.set_position(0, 0);
-        for byte in data.iter().rev() {
+        for byte in data.iter() {
             self.data(*byte);
         }
         self.command(0x20); // horizontal addressing

@@ -1,6 +1,10 @@
 # How to create the Rust logo that displays well on the Nokia 5110 display:
 convert -resize 56x48! -gravity center -extent 84x48 -depth 1 -rotate 270 -flop Rust_programming_language_black_logo.svg rust.pbm
-sed '1!G;h;$!d' rust.pbm | head --bytes=504 >! src/logo.bin
+
+# strip header
+
+# reverse file using python:
+# open('out.bin', 'wb').write( open('in.bin').read()[::-1] )
 
 # Notes:
 # - display is 84x48 and we want the logo centered
