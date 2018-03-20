@@ -20,7 +20,7 @@ pub use pcd8544_gpio::Pcd8544Gpio;
 
 pub trait Pcd8544 {
     fn command(&mut self, u8);
-    fn data(&mut self, u8);
+    fn data(&mut self, &[u8]);
 
     fn init(&mut self) {
         self.command(0x21); // chip active; horizontal addressing mode (V = 0); use extended instruction set (H = 1)
@@ -38,10 +38,8 @@ pub trait Pcd8544 {
     fn print_char(&mut self, c: u8) {
         let i = (c as usize) - 0x20;
 
-        for c in font::ASCII[i].iter() {
-            self.data(*c);
-        }
-        self.data(0x00);
+        self.data(&font::ASCII[i]);
+        self.data(&[0x00]);
     }
 
     fn print(&mut self, s: &str) {
@@ -61,21 +59,17 @@ pub trait Pcd8544 {
     // note: data direction is vertical: [1 2 3 4 5 6]
     // 1 3 5
     // 2 4 6
-    fn draw_buffer(&mut self, data: &[u8; 6*84]) {
+    fn draw_buffer(&mut self, buffer: &[u8; 6*84]) {
         self.command(0x22); // vertical addressing
         self.set_position(0, 0);
-        for byte in data.iter() {
-            self.data(*byte);
-        }
+        self.data(buffer);
         self.command(0x20); // horizontal addressing
         self.set_position(0, 0);
     }
 
     fn clear(&mut self) {
         self.set_position(0, 0);
-        for _ in 0..(6*84) {
-            self.data(0x00);
-        }
+        self.data(&[0u8; 6*84]);
         self.set_position(0, 0);
     }
 }

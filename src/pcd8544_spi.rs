@@ -1,4 +1,4 @@
-use embedded_hal::spi::FullDuplex;
+use embedded_hal::blocking::spi::Write;
 use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::digital::OutputPin;
 
@@ -12,7 +12,7 @@ pub struct Pcd8544Spi<SPI, DC, CS> {
 
 impl<SPI, DC, CS> Pcd8544Spi<SPI, DC, CS>
 where
-    SPI: FullDuplex<u8>,
+    SPI: Write<u8>,
     DC: OutputPin,
     CS: OutputPin,
 {
@@ -35,31 +35,21 @@ where
 
 impl<SPI, DC, CS> Pcd8544 for Pcd8544Spi<SPI, DC, CS>
 where
-    SPI: FullDuplex<u8>,
+    SPI: Write<u8>,
     DC: OutputPin,
     CS: OutputPin,
 {
     fn command(&mut self, cmd: u8) {
         self.dc.set_low();
         self.cs.set_low();
-        if let Err(e) = block!(self.spi.send(cmd)) {
-panic!();
-        }
-        if let Err(e) = block!(self.spi.read()) {
-panic!();
-        }
+        self.spi.write(&[cmd]);
         self.cs.set_high();
     }
 
-    fn data(&mut self, data: u8) {
+    fn data(&mut self, data: &[u8]) {
         self.dc.set_high();
         self.cs.set_low();
-        if let Err(e) = block!(self.spi.send(data)) {
-panic!();
-        }
-        if let Err(e) = block!(self.spi.read()) {
-panic!();
-        }
+        self.spi.write(data);
         self.cs.set_high();
     }
 }

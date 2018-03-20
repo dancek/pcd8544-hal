@@ -62,10 +62,12 @@ where
         self.cs.set_high();
     }
 
-    fn data(&mut self, data: u8) {
+    fn data(&mut self, data: &[u8]) {
         self.dc.set_high();
         self.cs.set_low();
-        self.send(data);
+        for byte in data {
+            self.send(*byte);
+        }
         self.cs.set_high();
     }
 }
