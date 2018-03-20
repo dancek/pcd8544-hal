@@ -1,5 +1,4 @@
 use Pcd8544;
-use core::num::Wrapping;
 
 type Buffer = [u8; 504];
 
@@ -11,9 +10,9 @@ fn empty_buffer() -> Buffer {
 
 pub fn demo(pcd8544: &mut Pcd8544) {
     loop {
-        run_shader(pcd8544, 0..135, deform_1_z);
+        // run_shader(pcd8544, 0..135, deform_1_z);
 
-        for _ in 0..20 { pcd8544.draw_buffer(RUST_LOGO); }
+        // for _ in 0..20 { pcd8544.draw_buffer(RUST_LOGO); }
 
         run_optimized_mandelbrot(pcd8544);
 
@@ -87,19 +86,35 @@ pub fn mandelbrot_zoom(px: i32, py: i32, t: i32) -> bool {
     }
 
     let zoom: i32 = max_t - t;
-    let cx = zoom * px / 2 - 200;
+    let cx = zoom * px / 2 - 280;
     let cy = zoom * py / 2;
+
+    // optimizations: bulb 1 and 2
+    let q = (cx - 64).pow(2) + cy.pow(2);
+    if q == 0 || q/256 + cx - 64 < 64 * cy*cy / q {
+        return true;
+    }
+
+    if (cx + 256).pow(2) + cy*cy < 4096 {
+        return true;
+    }
 
     let mut x: i32 = 0;
     let mut y: i32 = 0;
 
-    for _ in 0..15 {
+    // TODO: would be nicer to make this depend on max_t
+    let iterations = match t {
+        0...7 => 15,
+        8...27 => 10+t,
+        _ => 50
+    };
+    for _ in 0..iterations {
         if (x * x + y * y) > 4 << 16 {
             return false;
         }
 
-        let xtemp = (x * x - y * y) / 256 + cx;
-        y = (2 * x * y) / 256 + cy;
+        let xtemp = (x * x - y * y).wrapping_shr(8) + cx;
+        y = (2 * x * y).wrapping_shr(8) + cy;
         x = xtemp;
     }
     true
