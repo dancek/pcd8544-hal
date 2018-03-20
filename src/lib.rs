@@ -7,6 +7,9 @@ extern crate nb;
 
 extern crate embedded_hal;
 
+// TODO: feature flag
+extern crate fpa;
+
 mod pcd8544_spi;
 mod pcd8544_gpio;
 mod font;
