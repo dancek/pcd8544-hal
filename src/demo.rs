@@ -14,7 +14,7 @@ pub fn demo(pcd8544: &mut Pcd8544) {
             pcd8544.draw_buffer(RUST_LOGO);
         }
 
-        run_shader(pcd8544, 0..135, deform_1_z);
+        run_shader(pcd8544, 0..75, deform_1_z);
 
         for _ in 0..25 {
             pcd8544.draw_buffer(RUST_LOGO);
@@ -26,7 +26,7 @@ pub fn demo(pcd8544: &mut Pcd8544) {
             pcd8544.draw_buffer(RUST_LOGO);
         }
 
-        run_shader(pcd8544, 0..100, interference);
+        run_shader(pcd8544, 0..50, interference);
     }
 }
 
@@ -151,7 +151,7 @@ pub fn interference(px: i32, py: i32, t: i32) -> bool {
     let x1 = sin(13 * t + 49).wrapping_shr(20);
     let y1 = (5 * sin(7 * t - 15)).wrapping_shr(22);
 
-    let x2 = (3 * sin(11 * t + 120)).wrapping_shr(21);
+    let x2 = (-3 * sin(11 * t + 120)).wrapping_shr(21);
     let y2 = -y1;
 
     let c1 = distance(x - x1, y - y1).wrapping_shr(3) % 2 == 0;
