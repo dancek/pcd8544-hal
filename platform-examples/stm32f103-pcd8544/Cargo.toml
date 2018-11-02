@@ -1,0 +1,29 @@
+[package]
+authors = ["Hannu Hartikainen <hannu.hartikainen@gmail.com>"]
+name = "stm32f103-pcd8544"
+version = "0.1.0"
+
+[dependencies]
+embedded-hal = "0.1.2"
+
+[dependencies.cortex-m]
+version = "0.4.0"
+
+[dependencies.cortex-m-rt]
+features = ["abort-on-panic"]
+version = "0.3.12"
+
+[dependencies.pcd8544-hal]
+path = "../.."
+
+[dependencies.stm32f103xx-hal]
+features = ["rt"]
+git = "https://github.com/japaric/stm32f103xx-hal.git"
+
+[profile.dev]
+codegen-units = 1
+incremental = false
+
+[profile.release]
+debug = true
+lto = true
